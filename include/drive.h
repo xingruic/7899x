@@ -24,7 +24,7 @@ namespace pid {
         const int speedPct;
         PIDconsts(double kp = 0, double ki = 0, double kd = 0, double threshold = 10, int speedPct = 100) :kp(kp), ki(ki), kd(kd), threshold(threshold), speedPct(speedPct) {}
     };
-    extern const PIDconsts PID45, PID90, PID135, PID180, PID_DRIVE, PID_ARC, PID_SLOWARC, PID_FLY;
+    extern const PIDconsts PID45, PID90, PID135, PID180, PID_DRIVE, PID_ARC, PID_SLOWARC, PID_DRIVEANGLE, PID_FLY;
     const double WHEEL_TO_CENTER = NULL; // the distance (degrees) from a wheel to the center
     void drive(double dist, int timeout, const struct PIDconsts &pc);
     void drive(double dist, int timeout);

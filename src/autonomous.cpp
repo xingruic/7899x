@@ -23,8 +23,8 @@ void auton() {
     Brain.Screen.clearScreen();
     switch (autonMode) {
     case FAR_SIDE:
-        // farSideWP();
-        farSideElims();
+        farSideWP();
+        // farSideElims();
         break;
     case CLOSE_SIDE:
         // closeSideWP();
@@ -139,23 +139,36 @@ void farSide3BallStart() {
 */
 
 void farSideWP() {
-    farSide3BallStart();
-    turn(-170, 1000);
+    spinIntk(100);
+    driveWait(800);
+    arcDist(1.0, 0.7, 350, 750);
+    turn(90, 700, false);
     spinIntk(-100);
-    drive(-200, 500);
-    drivePct(100, 100);
-    wait(750, msec);
-    drive(-300, 500);
-    drivePct(100, 100);
-    wait(1000, msec);
+    arcDist(0.8, 0.8, 1000, 1000);
     driveWait(-100);
-    arcWait(-70, -70, 100);
-    turn(-90, 500, false);
-    arcDist(0.5, 0.5, -1000, 500);
-    arcWait(-120, -100, 80, false);
-    turn(-135, 750, false);
-    arcWait(45, 100, 60);
-    drive(520, 1000);
+    turn(240, 850, false);
+    spinIntk(100);
+    drive(400, 700);
+    turn(130, 650, false);
+    driveWait(400);
+    arcWait(110, -100, 100, false);
+    spinIntk(-100);
+    turn(90, 500, false);
+    arcWait(180, 60, 0, false);
+    turn(230, 600, false);
+    spinIntk(100);
+    driveWait(500, 0.7, 0.5);
+    drive(150, 500);
+    drive(-200, 500);
+    turn(270, 250, false);
+    arcWait(260, -70, -60, false);
+    Pneu1.set(true);
+    driveWait(-100, 0.7, 0);
+    driveWait(-50, 0.7, 0.7);
+    drive(0, 1000);
+    // driveWait(-50, 1.0, 0);
+    // driveWait(-180, 1.0, 0.5);
+    // arcDist(0.7, 0.5, -2000, 1000);
 }
 
 void farSideElims() {

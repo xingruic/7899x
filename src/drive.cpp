@@ -112,13 +112,14 @@ void arcWait(const double &angle, const int &lspct, const int &rspct) {
 }
 
 
-const pid::PIDconsts pid::PID45(1, 0.1, 1, 1);
+const pid::PIDconsts pid::PID45(1, 0., 1, 1);
 const pid::PIDconsts pid::PID90(0.74, 0.2, 0.55, 4);
 const pid::PIDconsts pid::PID135(0.65, 0.5, 0.5, 2.5);
 const pid::PIDconsts pid::PID180(0.65, 0.2, 1.5, 3);
 const pid::PIDconsts pid::PID_DRIVE(0.36, 0.3, 0.5, 5);
 const pid::PIDconsts pid::PID_ARC(2.7, 0.5, 1.5, 3);
 const pid::PIDconsts pid::PID_SLOWARC(6, 0.5, 1, 3, 60);
+const pid::PIDconsts pid::PID_DRIVEANGLE(1, 0, 0, 0);
 const pid::PIDconsts pid::PID_FLY(1, 0, 0, 0);
 
 /**
@@ -351,7 +352,12 @@ void pid::turn(double angle, int timeout) {
     turn(angle, timeout, true);
 }
 
+/**
+ * my attempt at driving facing at an angle
+ * @pre
+*/
 void pid::driveAtAngle(int dist, double angle, int timeout, bool reset) {
+    if (reset) inertials.resetRotation();
 
 }
 
