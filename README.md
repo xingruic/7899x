@@ -1,3 +1,3 @@
-# summer2023
+# 7899x
 
-vexcode v5 project for summer testing
+vscode vex v5 for 7899x
