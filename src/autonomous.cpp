@@ -9,7 +9,7 @@ using vex::wait, vex::sec, vex::msec, vex::deg;
 using pid::PID45, pid::PID90, pid::PID135, pid::PID180, pid::PID_DRIVE, pid::PID_ARC, pid::PID_SLOWARC,
 /****/pid::turn, pid::drive, pid::arcTurn, pid::arcDist;
 
-auton_mode autonMode = FAR_SIDE;
+auton_mode autonMode = SKILLS;
 
 void farSideWP();
 void farSideElims();
@@ -140,35 +140,25 @@ void farSide3BallStart() {
 
 void farSideWP() {
     spinIntk(100);
-    driveWait(800);
-    arcDist(1.0, 0.7, 350, 750);
+    driveWait(900);
+    drive(150, 500);
+    drive(-150, 1000);
     turn(90, 700, false);
     spinIntk(-100);
     arcDist(0.8, 0.8, 1000, 1000);
     driveWait(-100);
-    turn(240, 850, false);
-    spinIntk(100);
-    drive(400, 700);
-    turn(130, 650, false);
-    driveWait(400);
-    arcWait(110, -100, 100, false);
-    spinIntk(-100);
-    turn(90, 500, false);
-    arcWait(180, 60, 0, false);
-    turn(230, 600, false);
-    spinIntk(100);
-    driveWait(500, 0.7, 0.5);
-    drive(150, 500);
-    drive(-200, 500);
-    turn(270, 250, false);
-    arcWait(260, -70, -60, false);
-    Pneu1.set(true);
-    driveWait(-100, 0.7, 0);
-    driveWait(-50, 0.7, 0.7);
-    drive(0, 1000);
-    // driveWait(-50, 1.0, 0);
-    // driveWait(-180, 1.0, 0.5);
-    // arcDist(0.7, 0.5, -2000, 1000);
+    turn(270, 2000, false);
+    // spinIntk(100);
+    // drive(400, 700);
+    // turn(130, 650, false);
+    // driveWait(300);
+    // spinIntk(-100);
+    // drive(200, 500);
+    // turn(180, 1000, false);
+    // driveWait(200);
+    // arcWait(210, 80, -80, false);
+    // arcWait(250, 80, -20, false);
+    // turn(270, 1000, false);
 }
 
 void farSideElims() {
@@ -230,12 +220,12 @@ void progSkills() {
     spinCat(0); // just to make sure it stops lol
     driveWait(200);
     arcWait(35, 70, 100, false);
-    arcWait(15, 20, 100, false);
+    arcWait(15, 50, 100, false);
     driveWait(150, 1.0, 0.9);
-    driveWait(270);
+    driveWait(175);
     spinCat(0); // just to make sure it stops lol
     arcDist(0.8, 1.0, 1000, 800);
-    turn(-225, 1000, false);
+    turn(-220, 1000, false);
 
     Pneu1.set(true);
     driveWait(-50, 0.7, 0.7);
@@ -251,42 +241,54 @@ void progSkills() {
     control.Screen.setCursor(1, 1);
     control.Screen.print("Angle: %.2f    ", getRotation());
 
-    // // inertials.setRotation(, deg);
+    // inertials.setRotation(, deg);
     spinIntk(-100);
     driveWait(50);
     arcWait(-200, 100, -80, false);
     Pneu1.set(false);
     turn(-175, 500, false);
 
-    driveWait(500);
-    arcWait(-110, 100, 0, false);
-    driveWait(20);
-    arcWait(-150, -100, 100, false);
+    driveWait(700);
+    turn(-220, 1000, false);
     Pneu1.set(true);
-    turn(-190, 500, false);
-    arcDist(0.7, 0.9, -2000, 900);
-    arcWait(-180, 0, 50, false);
+    Pneu2.set(true);
+    driveWait(-200, 0.5, 0.6);
+    Pneu1.set(false);
+    arcWait(-200, -40, -70, false);
+    arcDist(0.5, 0.7, -300, 1000);
     turn(-180, 500, false);
 
     driveWait(50);
-    Pneu1.set(false);
-    driveWait(100);
+    Pneu2.set(false);
+    driveWait(150);
     arcWait(-115, 100, 10, false);
     driveWait(150);
+    arcWait(-140, -70, 70, false);
+    turn(-160, 500, false);
+    Pneu2.set(true);
+    wait(100, msec);
+    drive(-2000, 1500, pid::with_speed(PID_DRIVE, 80));
+    driveWait(100);
+    turn(-180, 500, false);
+    Pneu2.set(false);
+
+    driveWait(100);
+    arcWait(-115, 100, 10, false);
+    driveWait(200);
     arcWait(-140, -70, 70, false);
     turn(-160, 500, false);
     Pneu1.set(true);
     Pneu2.set(true);
     wait(100, msec);
     drive(-2000, 1500, pid::with_speed(PID_DRIVE, 80));
-    arcWait(-180, 0, 50, false);
+    driveWait(100);
     turn(-180, 500, false);
 
-    driveWait(50);
-    Pneu1.set(false);
-    Pneu2.set(false);
-    arcWait(-50, 100, -20, false);
-    driveWait(300);
-    arcWait(-20, 80, -20, false);
-    turn(0, 10000, false);
+    // driveWait(50);
+    // Pneu1.set(false);
+    // Pneu2.set(false);
+    // arcWait(-50, 100, -20, false);
+    // driveWait(300);
+    // arcWait(-20, 80, -20, false);
+    // turn(0, 10000, false);
 }
