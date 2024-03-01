@@ -98,13 +98,22 @@ void usercontrol(void) {
   tc.bindButton(&control.ButtonL2, []() {Pneu1.set(false); Pneu2.set(false);});
   tc.bindButton(&control.ButtonA, compSwitchKinda);
   tc.updatePressing();
+
+  int seeCata = 0;
+
   while (1) {
     left = control.Axis3.position(), right = left;
     left += control.Axis1.position();
     right -= control.Axis1.position();
     drivePct(left + lDriveModifier, right + rDriveModifier);
 
-    if (cata || distances.isObjectDetected() && distances.objectDistance(mm) < 50) {
+    if (!distances.isObjectDetected() || distances.objectDistance(mm) > 50) {
+      seeCata = 0;
+    } else if (seeCata < 10) {
+      seeCata++;
+    }
+
+    if (cata || seeCata < 1) {
       spinCat(100 + cataModifier);
     } else {
       spinCat(0);
