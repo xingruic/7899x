@@ -11,6 +11,7 @@ using pid::PID45, pid::PID90, pid::PID135, pid::PID180, pid::PID_DRIVE, pid::PID
 
 auton_mode autonMode = SKILLS;
 
+void farSide3BallStart();
 void farSideWP();
 void farSideElims();
 
@@ -23,12 +24,12 @@ void auton() {
     Brain.Screen.clearScreen();
     switch (autonMode) {
     case FAR_SIDE:
-        farSideWP();
-        // farSideElims();
+        // farSideWP();
+        farSideElims();
         break;
     case CLOSE_SIDE:
-        // closeSideWP();
-        closeSideElims();
+        closeSideWP();
+        // closeSideElims();
         break;
     case SKILLS:
         progSkills();
@@ -78,7 +79,7 @@ void autonSelect() {
     Brain.Screen.pressed(handleBrainAutonSelect);
 }
 
-void closeSideWP() {
+/*old closeSideWP
     spinIntk(100);
     driveWait(-200, 0.8, 1.0);
     spinIntk(-100);
@@ -95,6 +96,39 @@ void closeSideWP() {
     Pneu1.set(false);
     turn(20, 500, false);
     drive(530, 1000);
+*/
+
+void closeSideWP() {
+    spinIntk(100);
+    drive(1120, 1350);
+    driveWait(-50, 0.5, 0.5);
+    turn(90, 500, false);
+    drive(-50, 400);
+    spinIntk(-100);
+    wait(1000, msec);
+    arcWait(60, -70, 0, false);
+    spinIntk(100);
+    turn(0, 350, false);
+    drive(150, 500);
+    driveWait(-150, 0.7, 0.7);
+    turn(45, 450, false);
+    drive(-700, 900);
+    driveWait(-10);
+    turn(-30, 900, false);
+    Pneu2.set(true);
+    Pneu1.set(true);
+    wait(150, msec);
+    driveWait(-50, 0.6, 0.6);
+    turn(-90, 750, false);
+    Pneu2.set(false);
+    turn(-30, 500, false);
+    driveWait(-200, 1.0, 0.3);
+    turn(-80, 300, false);
+    drive(-500, 850);
+    Pneu1.set(false);
+    turn(90, 1000, false);
+    spinIntk(-100);
+    drive(100, 2000);
 }
 
 void closeSideElims() {
@@ -130,80 +164,100 @@ void farSide3BallStart() {
     wait(800, msec);
 }
 
-// alternative farSideWP
-/*
-    // drive(-2000, 1500);
-    // arcWait(70, 100, 60);
-    // turn(90, 1000, false);
-    // drive(450, 1000);
-*/
-
 void farSideWP() {
+    Pneu2.set(true);
     spinIntk(100);
-    driveWait(900);
-    drive(150, 500);
-    drive(-150, 1000);
-    turn(90, 700, false);
+    wait(150, msec);
+    driveWait(-100, 0.7, 0.7);
+    arcWait(-60, -80, 0, false);
+    arcWait(-90, -80, 80, false);
+    Pneu2.set(false);
+    turn(-70, 650, false);
+    arcDist(1.0, 0.7, -1000, 750);
+    arcWait(-40, 70, 0, false);
+    driveWait(250, 0.7, 0.7);
+    arcWait(60, 70, 0, false);
+    turn(80, 300, false);
+    drive(400, 650);
+    turn(43, 450, false);
+    drive(400, 650);
+    arcWait(140, 40, -70, false);
+    turn(180, 250, false);
     spinIntk(-100);
-    arcDist(0.8, 0.8, 1000, 1000);
+    drive(2000, 800);
     driveWait(-100);
-    turn(270, 2000, false);
-    // spinIntk(100);
-    // drive(400, 700);
-    // turn(130, 650, false);
-    // driveWait(300);
-    // spinIntk(-100);
-    // drive(200, 500);
-    // turn(180, 1000, false);
-    // driveWait(200);
-    // arcWait(210, 80, -80, false);
-    // arcWait(250, 80, -20, false);
-    // turn(270, 1000, false);
+    turn(335, 900, false);
+    spinIntk(100);
+    drive(400, 900);
+    arcWait(220, -70, 40, false);
+    turn(180, 250, false);
+    spinIntk(-100);
+    drive(2000, 800);
+    driveWait(-100);
+    turn(330, 900, false);
+    spinIntk(100);
+    driveWait(150);
+    arcWait(310, 50, 100, false);
+    drive(300, 1000);
 }
 
 void farSideElims() {
-    farSide3BallStart();
-    turn(-170, 1000);
+    spinIntk(100);
+    Pneu1.set(true);
+    wait(200, msec);
+    Pneu1.set(false);
+    drive(900, 1000);
+    turn(90, 500, false);
     spinIntk(-100);
-    drive(-200, 500);
-    drivePct(100, 100);
-    wait(750, msec);
-    drive(-300, 500);
-    drivePct(100, 100);
-    wait(1000, msec);
-    driveWait(-100);
-    arcWait(-70, -70, 100);
-    turn(-85, 500, false);
+    wait(450, msec);
+    turn(-70, 700, false);
+    spinIntk(100);
+    drive(300, 700);
+    driveWait(-50, 0.5, 1.0);
+    turn(90, 700, false);
     spinIntk(-100);
-    driveWait(400);
-    arcWait(-30, 70, 20, false);
-    turn(0, 10000);
+    wait(450, msec);
+    turn(230, 750, false);
+    spinIntk(100);
+    drive(300, 700);
+    driveWait(-75);
+    Pneu1.set(true);
+    turn(270, 500, false);
+    drive(-2000, 700);
+    driveWait(20);
+    Pneu1.set(false);
+    turn(180, 700, false);
+    driveWait(800);
+    arcWait(100, -70, 70, false);
+    spinIntk(-100);
+    turn(80, 500, false);
+    turn(-90, 1000, false);
 }
 
-void progSkills() {
-    // inertials.setRotation(59, deg);
+void skillsBeginning() {
     spinIntk(100);
-    drive(-280, 500);
+    drive(-330, 700);
     spinIntk(-100);
-    turn(-17, 700, false);
+    turn(-23, 800, false);
     drive(-150, 400);
     // launch triballs --
-    // Pneu1.set(true);
-    // MotorCat.setBrake(vex::coast);
-    // MotorIntk.setBrake(vex::coast);
-    // const int catModif = -30;
-    // for (int i = 0; i < 35; i++) {
-    //     Brain.Screen.printAt(50, 50, "i: %d   ", i);
-    //     spinCat(100 + catModif);
-    //     spinIntk(-100);
-    //     wait(500, msec);
-    //     spinCat(99 + catModif);
-    //     spinIntk(-99);
-    //     wait(500, msec);
-    // }
-    // Pneu1.set(false);
+    Pneu1.set(true);
+    MotorCat.setBrake(vex::coast);
+    MotorIntk.setBrake(vex::coast);
+    const int catModif = -8;
+    for (int i = 0; i < 24; i++) {
+        Brain.Screen.printAt(50, 50, "i: %d   ", i);
+        spinCat(100 + catModif);
+        spinIntk(-100);
+        wait(500, msec);
+        spinCat(99 + catModif);
+        spinIntk(-99);
+        wait(500, msec);
+    }
+    Pneu1.set(false);
     // launch triballs ^^
     MotorCat.setBrake(vex::brake);
+    MotorIntk.setBrake(vex::brake);
     for (int i = 0; i < 50 && (distances.isObjectDetected() && distances.objectDistance(vex::mm) > 50); i++) {
         spinCat(100);
         wait(10, msec);
@@ -213,7 +267,13 @@ void progSkills() {
     // inertials.calibrate();
     // while (inertials.isCalibrating()) wait(100, msec);
     turn(60, 600, false);
-    arcDist(0.5, 1.0, -1000, 1000);
+    arcDist(0.5, 1.0, -1000, 700);
+}
+
+void progSkills() {
+    // beginning macro
+    skillsBeginning();
+
     arcWait(65, -20, 80, false);
     turn(50, 350, false);
     spinIntk(-100); // just to make sure it spins
@@ -228,8 +288,7 @@ void progSkills() {
     turn(-220, 1000, false);
 
     Pneu1.set(true);
-    driveWait(-50, 0.7, 0.7);
-    driveWait(-50, 1.0, 0);
+    driveWait(-100);
     driveWait(-180, 1.0, 0.5);
     arcDist(0.7, 0.5, -2000, 1000);
     driveWait(50);
@@ -242,53 +301,99 @@ void progSkills() {
     control.Screen.print("Angle: %.2f    ", getRotation());
 
     // inertials.setRotation(, deg);
-    spinIntk(-100);
+    spinIntk(0);
     driveWait(50);
-    arcWait(-200, 100, -80, false);
+    arcWait(-230, 100, -80, false);
     Pneu1.set(false);
-    turn(-175, 500, false);
+    turn(-175, 400, false);
 
-    driveWait(700);
-    turn(-220, 1000, false);
+    driveWait(200);
+    driveWait(500, 0.8, 1.0);
+    arcWait(-190, 0, 100, false);
+    turn(-220, 500, false);
     Pneu1.set(true);
     Pneu2.set(true);
     driveWait(-200, 0.5, 0.6);
+    spinIntk(-30);
+    arcWait(-210, -40, -60, false);
     Pneu1.set(false);
-    arcWait(-200, -40, -70, false);
-    arcDist(0.5, 0.7, -300, 1000);
-    turn(-180, 500, false);
+    arcWait(-200, -40, -60, false);
+    turn(-180, 300, false);
+    drive(200, 500);
+    arcDist(0.7, 0.7, -2000, 700);
+    drive(100, 250);
+    driveWait(30);
+    arcWait(-185, 20, -20, false, 500);
+    arcWait(-175, -20, 20, false, 500);
 
+    spinIntk(0);
     driveWait(50);
     Pneu2.set(false);
     driveWait(150);
     arcWait(-115, 100, 10, false);
     driveWait(150);
     arcWait(-140, -70, 70, false);
-    turn(-160, 500, false);
+    turn(-160, 600, false);
     Pneu2.set(true);
     wait(100, msec);
-    drive(-2000, 1500, pid::with_speed(PID_DRIVE, 80));
+    driveWait(-300, 0.6, 0.5);
+    driveWait(100, 0.7, 0.7);
+    spinIntk(-30);
+    arcDist(0.7, 0.7, -2000, 1000);
+    driveWait(30);
+    arcWait(-180, 20, -20, false, 500);
+    arcWait(-170, -20, 20, false, 500);
     driveWait(100);
-    turn(-180, 500, false);
     Pneu2.set(false);
 
+    spinIntk(0);
     driveWait(100);
-    arcWait(-115, 100, 10, false);
-    driveWait(200);
-    arcWait(-140, -70, 70, false);
-    turn(-160, 500, false);
+    arcWait(-105, 100, 10, false);
+    driveWait(150);
+    arcWait(-115, -70, 70, false);
+    turn(-135, 700, false);
     Pneu1.set(true);
     Pneu2.set(true);
-    wait(100, msec);
-    drive(-2000, 1500, pid::with_speed(PID_DRIVE, 80));
-    driveWait(100);
-    turn(-180, 500, false);
+    driveWait(-200, 0.6, 0.5);
+    spinIntk(-30);
+    arcWait(-160, -60, -40, false);
+    turn(-170, 300, false);
+    Pneu1.set(false);
+    drive(200, 500);
+    arcDist(0.7, 0.7, -2000, 900); //
+    driveWait(30);
+    arcWait(-185, 20, -20, false, 500);
+    arcWait(-175, -20, 20, false, 500);
 
-    // driveWait(50);
-    // Pneu1.set(false);
-    // Pneu2.set(false);
-    // arcWait(-50, 100, -20, false);
-    // driveWait(300);
-    // arcWait(-20, 80, -20, false);
-    // turn(0, 10000, false);
+    spinIntk(100);
+    driveWait(100);
+    Pneu1.set(false);
+    Pneu2.set(false);
+    driveWait(100);
+    arcWait(-115, 100, 10, false);
+    driveWait(300);
+    turn(0, 800, false);
+
+    spinIntk(-100);
+    drive(400, 700);
+    turn(-90, 700, false);
+    spinIntk(100);
+    drive(600, 800);
+    spinIntk(-100);
+    turn(0, 700, false);
+    arcWait(60, 20, -100, false);
+    spinIntk(100);
+    turn(180, 600, false);
+    Pneu2.set(true);
+    driveWait(-150, 0.6, 0.7);
+    arcWait(200, -20, -60, false);
+    driveWait(-200, 0.5, 0.5);
+    turn(225, 300, false);
+    driveWait(-180, 0.5, 1.0);
+    arcDist(0.5, 0.7, -2000, 1000);
+    driveWait(50);
+    turn(250, 250, false);
+    arcDist(0.7, 1.0, 200, 650);
+    arcDist(0.7, 1.0, -2000, 1000);
+    drive(200, 500);
 }

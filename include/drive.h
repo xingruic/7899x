@@ -12,12 +12,13 @@ void drivePct(const int &left, const int &right);
 void driveWait(const double &dist, const double &lmult, const double &rmult);
 void driveWait(const double &dist);
 
+void arcWait(const double &angle, const int &lspct, const int &rspct, bool reset, int maxtime);
 void arcWait(const double &angle, const int &lspct, const int &rspct, bool reset);
 void arcWait(const double &angle, const int &lspct, const int &rspct);
 
 namespace pid {
     // actual360 is how many degrees the gyro sensor thinks it turned when it is turned 360 degrees clockwise.
-    const double actual360 = 357.3;
+    const double actual360 = 358.2;
 
     struct PIDconsts {
         const double kp, ki, kd, threshold;

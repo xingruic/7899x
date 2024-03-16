@@ -9,6 +9,8 @@ enum auton_mode {
 
 extern auton_mode autonMode;
 
+void skillsBeginning();
+
 void auton();
 
 void autonSelect();

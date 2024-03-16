@@ -21,10 +21,14 @@ void pre_auton(void) {
   inertials.calibrate();
   while (inertials.isCalibrating()) wait(100, msec);
   inertials.resetRotation();
-  while (!Competition.isEnabled()) {
-    wait(100, msec);
-    Brain.Screen.printAt(20, 200, "Angle from program start: %.2f   ", inertials.rotation());
-  }
+  Brain.Screen.drawRectangle(450, 10, 20, 20, green);
+  thread printAngle([]() {
+    while (true) {
+      wait(200, msec);
+      if (!Competition.isEnabled())
+        Brain.Screen.printAt(20, 200, "Angle from program start: %.2f   ", inertials.rotation());
+    }
+    });
 }
 
 void toggle(digital_out &dev) { dev.set(!dev.value()); }
@@ -39,11 +43,11 @@ void toggleWings() {
 }
 
 int intkSpeed = 0;
-int cataModifier = 0;
+int cataModifier = -10;
 bool cata = 0;
 
 void incrCataModifier() {
-  cataModifier += 10;
+  cataModifier += 5;
   cataModifier = fmin(cataModifier, 0);
 }
 
@@ -59,6 +63,7 @@ void toggleCat() {
 void usercontrol(void);
 
 void compSwitchKinda(void) {
+  // inertials.setRotation(-180 / 360.0 * pid::actual360, deg);
   inertials.resetRotation();
   control.Screen.clearScreen();
   control.Screen.setCursor(1, 1);
@@ -68,6 +73,7 @@ void compSwitchKinda(void) {
   setStopping(coast);
   for (int i = 0; i < 500; i++) {
     wait(10, msec);
+    Brain.Screen.printAt(20, 200, "Angle from program start: %.2f   ", inertials.rotation());
     if (control.ButtonB.pressing()) {
       control.Screen.clearScreen();
       setStopping(brake);
@@ -87,6 +93,27 @@ void compSwitchKinda(void) {
   auton();
 }
 
+bool SKILLS_MACRO_RUN;
+void skillsMacro() {
+  control.Screen.clearScreen();
+  control.Screen.setCursor(2, 1);
+  control.Screen.print("press B for driver");
+  spinCat(0);
+  SKILLS_MACRO_RUN = true;
+  thread thr([]() {
+    skillsBeginning();
+    SKILLS_MACRO_RUN = false;
+    });
+  while (1) {
+    if (!SKILLS_MACRO_RUN) return;
+    if (control.ButtonB.pressing()) {
+      thr.interrupt();
+      return;
+    }
+    wait(50, msec);
+  }
+}
+
 void usercontrol(void) {
   int left, right;
   thread dashboardThread(dashboardLoop);
@@ -94,15 +121,21 @@ void usercontrol(void) {
   tc.bindButton(&control.ButtonY, toggleCat);
   tc.bindButton(&control.ButtonLeft, incrCataModifier);
   tc.bindButton(&control.ButtonRight, decrCataModifier);
-  tc.bindButton(&control.ButtonL1, toggleWings);
-  tc.bindButton(&control.ButtonL2, []() {Pneu1.set(false); Pneu2.set(false);});
+  tc.bindButton(&control.ButtonL1, toggleRight);
+  tc.bindButton(&control.ButtonL2, toggleLeft);
   tc.bindButton(&control.ButtonA, compSwitchKinda);
+  tc.bindButton(&control.ButtonDown, skillsMacro);
   tc.updatePressing();
 
   int seeCata = 0;
 
+  double sens = 0.7; // sensitivity from 0.0 to 1.0
+  double controlLR;
   while (1) {
     left = control.Axis3.position(), right = left;
+    controlLR = control.Axis1.position();
+    if (controlLR<90 || controlLR>-90) controlLR *= sens;
+
     left += control.Axis1.position();
     right -= control.Axis1.position();
     drivePct(left + lDriveModifier, right + rDriveModifier);
@@ -114,14 +147,17 @@ void usercontrol(void) {
     }
 
     if (cata || seeCata < 1) {
+      spinCat(99 + cataModifier);
       spinCat(100 + cataModifier);
     } else {
       spinCat(0);
     }
 
     if (control.ButtonR1.pressing()) {
+      spinIntk(99);
       spinIntk(100);
     } else if (control.ButtonR2.pressing()) {
+      spinIntk(-99);
       spinIntk(-100);
     } else {
       spinIntk(0);

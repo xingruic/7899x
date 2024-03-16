@@ -73,8 +73,9 @@ void driveWait(const double &dist) { driveWait(dist, 1, 1); }
  * @param lspct the Left Speed in PerCenT
  * @param rspct the Right Speed in PerCenT
  * @param reset whether or not to reset the gyro rotation before arcWait happens
+ * @param maxtime maximum time in msec to wait before just exiting
 */
-void arcWait(const double &angle, const int &lspct, const int &rspct, bool reset) {
+void arcWait(const double &angle, const int &lspct, const int &rspct, bool reset, int maxtime) {
     if (reset) inertials.resetRotation();
     double curr;
     double error, prev_error;
@@ -90,7 +91,8 @@ void arcWait(const double &angle, const int &lspct, const int &rspct, bool reset
         return;
     }
 
-    while (1) {
+    vex::timer t1;
+    while (t1.time(vex::msec) < maxtime) {
         vex::wait(10, vex::msec);
         curr = getRotation();
         error = angle - curr;
@@ -107,10 +109,13 @@ void arcWait(const double &angle, const int &lspct, const int &rspct, bool reset
  * @param lspct the Left Speed in PerCenT
  * @param rspct the Right Speed in PerCenT
 */
+void arcWait(const double &angle, const int &lspct, const int &rspct, bool reset) {
+    arcWait(angle, lspct, rspct, reset, 1000000);
+}
+
 void arcWait(const double &angle, const int &lspct, const int &rspct) {
     arcWait(angle, lspct, rspct, true);
 }
-
 
 const pid::PIDconsts pid::PID45(1, 0., 1, 1);
 const pid::PIDconsts pid::PID90(0.74, 0.2, 0.55, 4);
@@ -201,7 +206,7 @@ void pid::arcDist(double lmult, double rmult, double dist, int timeout, const PI
         if (lmult > rmult) curr = LeftDrive.position(vex::deg);
         else curr = RightDrive.position(vex::deg);
         err = dist - curr;
-        std::cout << "PID arcDist error = " << curr << ")\n\n";
+        std::cout << "PID arcDist error = " << err << ")\n\n";
         pd = err - perr;
         if (err < 0 != perr < 0) {
             pi = 0;
@@ -340,7 +345,7 @@ void pid::turn(double angle, int timeout, bool reset) {
     if (fabs(error) <= 70) turn(angle, timeout, reset, PID45);
     else if (fabs(error) <= 120) turn(angle, timeout, reset, PID90);
     else if (fabs(error) <= 160) turn(angle, timeout, reset, PID135);
-    else turn(error, timeout, reset, PID180);
+    else turn(angle, timeout, reset, PID180);
 };
 
 /**
@@ -350,19 +355,6 @@ void pid::turn(double angle, int timeout, bool reset) {
 */
 void pid::turn(double angle, int timeout) {
     turn(angle, timeout, true);
-}
-
-/**
- * my attempt at driving facing at an angle
- * @pre
-*/
-void pid::driveAtAngle(int dist, double angle, int timeout, bool reset) {
-    if (reset) inertials.resetRotation();
-
-}
-
-void pid::driveAtAngle(int dist, double angle, int timeout) {
-    driveAtAngle(dist, angle, timeout, true);
 }
 
 /**
