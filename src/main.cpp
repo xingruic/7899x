@@ -33,17 +33,8 @@ void pre_auton(void) {
 
 void toggle(digital_out &dev) { dev.set(!dev.value()); }
 
-void toggleLeft() { toggle(Pneu2); }
-
-void toggleRight() { toggle(Pneu1); }
-
-void toggleWings() {
-  toggleLeft();
-  toggleRight();
-}
-
 int intkSpeed = 0;
-int cataModifier = -10;
+int cataModifier = 0;
 bool cata = 0;
 
 void incrCataModifier() {
@@ -121,20 +112,20 @@ void usercontrol(void) {
   tc.bindButton(&control.ButtonY, toggleCat);
   tc.bindButton(&control.ButtonLeft, incrCataModifier);
   tc.bindButton(&control.ButtonRight, decrCataModifier);
-  tc.bindButton(&control.ButtonL1, toggleRight);
-  tc.bindButton(&control.ButtonL2, toggleLeft);
+  tc.bindButton(&control.ButtonL2, []() {toggle(PneuLF);toggle(PneuRF);});
+  tc.bindButton(&control.ButtonL1, []() {toggle(PneuLB);toggle(PneuRB);});
   tc.bindButton(&control.ButtonA, compSwitchKinda);
   tc.bindButton(&control.ButtonDown, skillsMacro);
   tc.updatePressing();
 
   int seeCata = 0;
 
-  double sens = 0.7; // sensitivity from 0.0 to 1.0
-  double controlLR;
+  // double sens = 0.7; // sensitivity from 0.0 to 1.0
+  // double controlLR;
   while (1) {
     left = control.Axis3.position(), right = left;
-    controlLR = control.Axis1.position();
-    if (controlLR<90 || controlLR>-90) controlLR *= sens;
+    // controlLR = control.Axis1.position();
+    // if (controlLR<90 || controlLR>-90) controlLR *= sens;
 
     left += control.Axis1.position();
     right -= control.Axis1.position();

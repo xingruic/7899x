@@ -87,8 +87,9 @@ void dashboardLoop(void) {
     drawMotorDisplay(1, 136, &MotorCat);
     drawMotorDisplay(1, 153, &MotorIntk);
     // drawVisionCoords(200, 100, TRIGREEN);
-    Brain.Screen.printAt(1, 224, "inertials.heading()  %.2f",
-      inertials.heading());
+    Brain.Screen.printAt(1, 224, "distances %s %.2f", (distances.isObjectDetected() ? "true " : "false"), distances.objectDistance(mm));
+    // Brain.Screen.printAt(1, 224, "inertials.heading()  %.2f",
+    //   inertials.heading());
     drawControls(300, 30, control.Axis1.position(), control.Axis3.position());
 
   }
