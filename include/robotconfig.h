@@ -18,7 +18,7 @@ extern vex::digital_out PneuLF;
 extern vex::digital_out PneuRF;
 extern vex::digital_out PneuLB;
 extern vex::digital_out PneuRB;
-extern vex::digital_out Pneu3;
+extern vex::digital_out PneuHang;
 extern vex::distance distances;
 extern vex::inertial inertials;
 extern vex::vision::signature TRIGREEN;

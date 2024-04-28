@@ -114,13 +114,16 @@ void arcWait(const double &angle, const int &lspct, const int &rspct, bool reset
 }
 
 void arcWait(const double &angle, const int &lspct, const int &rspct) {
-    arcWait(angle, lspct, rspct, true);
+    arcWait(angle, lspct, rspct, false);
 }
 
-const pid::PIDconsts pid::PID45(1, 0., 1, 1);
-const pid::PIDconsts pid::PID90(0.74, 0.2, 0.55, 4);
-const pid::PIDconsts pid::PID135(0.65, 0.5, 0.5, 2.5);
-const pid::PIDconsts pid::PID180(0.65, 0.2, 1.5, 3);
+bool openFrontWings = false;
+
+const pid::PIDconsts pid::PID20(1.68, 0.05, 0.005, 3);
+const pid::PIDconsts pid::PID60(1.05, 0.05, 3.7, 3);
+const pid::PIDconsts pid::PID90(0.65, 0.05, 0.01, 5);
+const pid::PIDconsts pid::PID135(0.57, 0.02, 0.01, 5);
+const pid::PIDconsts pid::PID180(0.55, 0.005, 0.02, 5);
 const pid::PIDconsts pid::PID_DRIVE(0.36, 0.3, 0.5, 5);
 const pid::PIDconsts pid::PID_ARC(2.7, 0.5, 1.5, 3);
 const pid::PIDconsts pid::PID_SLOWARC(6, 0.5, 1, 3, 60);
@@ -294,7 +297,7 @@ void pid::arcTurn(bool right, int radius, double angle, int timeout, bool reset)
     arcTurn(right, radius, angle, timeout, reset, pid::PID_ARC);
 }
 void pid::arcTurn(bool right, int radius, double angle, int timeout) {
-    arcTurn(right, radius, angle, timeout, true);
+    arcTurn(right, radius, angle, timeout, false);
 }
 
 /**
@@ -317,7 +320,6 @@ void pid::turn(double angle, int timeout, bool reset, const PIDconsts &pc) {
         vex::wait(10, vex::msec);
         curr = getRotation();
         error = angle - curr;
-        std::cout << "PID Turn error = " << error << "\n\n";
         derivative = error - prev_error;
         if (error < 0 != prev_error < 0) {
             integral = 0;
@@ -327,6 +329,7 @@ void pid::turn(double angle, int timeout, bool reset, const PIDconsts &pc) {
         velo = error * pc.kp + integral * pc.ki + derivative * pc.kd;
         if (velo > pc.speedPct) velo = pc.speedPct;
         if (velo < -pc.speedPct) velo = -pc.speedPct;
+        std::cout << "PID Turn error, velo = " << error << '\t' << velo << "\n\n";
         drivePct(velo, -velo);
     }
     drivePct(0, 0);
@@ -342,19 +345,20 @@ void pid::turn(double angle, int timeout, bool reset) {
     double error;
     if (reset) error = angle;
     else error = angle - getRotation();
-    if (fabs(error) <= 70) turn(angle, timeout, reset, PID45);
+    if (fabs(error) <= 40) turn(angle, timeout, reset, PID20);
+    else if (fabs(error) <= 75) turn(angle, timeout, reset, PID60);
     else if (fabs(error) <= 120) turn(angle, timeout, reset, PID90);
     else if (fabs(error) <= 160) turn(angle, timeout, reset, PID135);
     else turn(angle, timeout, reset, PID180);
 };
 
 /**
- * turns a specified amount of degrees
+ * turns to the specified degree
  * @param angle the angle (degrees) to turn
  * @param timeout the time in ms after which the function will exit
 */
 void pid::turn(double angle, int timeout) {
-    turn(angle, timeout, true);
+    turn(angle, timeout, false);
 }
 
 /**

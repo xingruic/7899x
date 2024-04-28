@@ -20,15 +20,23 @@ void spinCat(int speed) {
 }
 
 void toggleController::bindButton(const vex::controller::button *button, void(*func)()) {
-    if (bindings.count(button) > 0) {
+    if (isBinded(button)) {
         std::cerr << "button already binded. exiting bindButton()" << std::endl;
         return;
     }
     bindings[button] = func;
 }
 
+void toggleController::unbindButton(const vex::controller::button *button) {
+    if (!isBinded(button)) {
+        std::cerr << "button not binded. exiting unbindButton()" << std::endl;
+        return;
+    }
+    bindings.erase(button);
+}
+
 void toggleController::updatePressing() {
-    for (auto i = pressing.begin();i != pressing.end();i++) {
+    for (auto i = pressing.begin(); i != pressing.end(); i++) {
         i->second = i->first->pressing();
     }
 }
@@ -42,3 +50,9 @@ void toggleController::runAllPressed() {
         if (justPressed(i->first)) i->second();
     }
 }
+
+bool toggleController::isBinded(const vex::controller::button *button) {
+    return bindings.count(button) > 0;
+}
+
+toggleController TCONTROLLER = toggleController();

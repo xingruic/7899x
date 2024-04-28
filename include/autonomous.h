@@ -1,16 +1,23 @@
 #pragma once
+#include "vex.h"
 
-enum auton_mode {
-    FAR_SIDE,
-    CLOSE_SIDE,
-    SKILLS,
-    NONE,
-};
+namespace autonmode {
+    enum auton_mode {
+        FAR_SIDE,
+        CLOSE_SIDE,
+        SKILLS
+    };
+    extern char *mode_strings[3];
+    extern auton_mode mode;
+    extern int AWP; // true for WP, otherwise Elims
+    void updateControlScreen();
+    void decrMode();
+    void incrMode();
+    void toggleAWP();
+}
 
-extern auton_mode autonMode;
+extern vex::timer driverTime;
 
 void skillsBeginning();
 
 void auton();
-
-void autonSelect();

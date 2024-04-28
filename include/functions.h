@@ -14,10 +14,12 @@ void spinCat(int speed);
 class toggleController {
 public:
     void bindButton(const vex::controller::button *button, void(*func)());
+    void unbindButton(const vex::controller::button *button);
     void updatePressing();
-    bool justPressed(const vex::controller::button *);
+    bool justPressed(const vex::controller::button *button);
     void runAllPressed();
+    bool isBinded(const vex::controller::button *button);
 private:
     std::map<const vex::controller::button *, void(*)()> bindings;
     std::map<const vex::controller::button *, bool> pressing;
-};
+}extern TCONTROLLER;

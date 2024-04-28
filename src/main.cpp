@@ -14,7 +14,6 @@ using std::cout, std::endl;
 competition Competition;
 
 void pre_auton(void) {
-  thread autonSelectThread(autonSelect);
   setStopping(brake);
   MotorCat.setStopping(brake);
   MotorIntk.setStopping(brake);
@@ -32,6 +31,12 @@ void pre_auton(void) {
 }
 
 void toggle(digital_out &dev) { dev.set(!dev.value()); }
+
+void toggleBackWings() {
+  bool k = PneuLB.value();
+  PneuLB.set(!k);
+  PneuRB.set(!k);
+}
 
 int intkSpeed = 0;
 int cataModifier = 0;
@@ -54,34 +59,31 @@ void toggleCat() {
 void usercontrol(void);
 
 void compSwitchKinda(void) {
-  // inertials.setRotation(-180 / 360.0 * pid::actual360, deg);
+  drivePct(0, 0);
+  spinCat(0);
+  spinIntk(0);
+  setStopping(coast);
   inertials.resetRotation();
   control.Screen.clearScreen();
   control.Screen.setCursor(1, 1);
-  control.Screen.print("press A to start auton");
-  control.Screen.setCursor(2, 1);
-  control.Screen.print("press B for driver");
-  setStopping(coast);
-  for (int i = 0; i < 500; i++) {
-    wait(10, msec);
-    Brain.Screen.printAt(20, 200, "Angle from program start: %.2f   ", inertials.rotation());
+  control.Screen.print("hold A to start auton");
+  for (int cnt = 0;cnt < 50;) {
     if (control.ButtonB.pressing()) {
       control.Screen.clearScreen();
       setStopping(brake);
+      driverTime.clear();
       return;
     }
-  }
-  while (!control.ButtonA.pressing()) {
-    if (control.ButtonB.pressing()) {
-      control.Screen.clearScreen();
-      setStopping(brake);
-      return;
-    }
-    Brain.Screen.printAt(20, 200, "Angle from program start: %.2f   ", inertials.rotation());
+    if (control.ButtonA.pressing()) {
+      cnt++;
+    } else cnt = 0;
+    Brain.Screen.printAt(20, 200, "Angle from reset: %.2f   ", inertials.rotation());
     wait(20, msec);
   }
   setStopping(brake);
   auton();
+  control.Screen.clearScreen();
+  driverTime.clear();
 }
 
 bool SKILLS_MACRO_RUN;
@@ -96,9 +98,14 @@ void skillsMacro() {
     SKILLS_MACRO_RUN = false;
     });
   while (1) {
-    if (!SKILLS_MACRO_RUN) return;
+    if (!SKILLS_MACRO_RUN) {
+      control.Screen.clearScreen();
+      return;
+    }
     if (control.ButtonB.pressing()) {
       thr.interrupt();
+      control.Screen.clearScreen();
+      setStopping(brake);
       return;
     }
     wait(50, msec);
@@ -108,38 +115,57 @@ void skillsMacro() {
 void usercontrol(void) {
   int left, right;
   thread dashboardThread(dashboardLoop);
-  toggleController tc;
-  tc.bindButton(&control.ButtonY, toggleCat);
-  tc.bindButton(&control.ButtonLeft, incrCataModifier);
-  tc.bindButton(&control.ButtonRight, decrCataModifier);
-  tc.bindButton(&control.ButtonL2, []() {toggle(PneuLF);toggle(PneuRF);});
-  tc.bindButton(&control.ButtonL1, []() {toggle(PneuLB);toggle(PneuRB);});
-  tc.bindButton(&control.ButtonA, compSwitchKinda);
-  tc.bindButton(&control.ButtonDown, skillsMacro);
-  tc.updatePressing();
+  autonmode::updateControlScreen();
+  TCONTROLLER.bindButton(&control.ButtonLeft, autonmode::decrMode);
+  TCONTROLLER.bindButton(&control.ButtonY, toggleCat);
+  TCONTROLLER.bindButton(&control.ButtonUp, incrCataModifier);
+  TCONTROLLER.bindButton(&control.ButtonDown, decrCataModifier);
+  TCONTROLLER.bindButton(&control.ButtonL1, []() {openFrontWings = !openFrontWings;});
+  TCONTROLLER.bindButton(&control.ButtonB, toggleBackWings);
+  TCONTROLLER.bindButton(&control.ButtonA, compSwitchKinda);
+  TCONTROLLER.updatePressing();
 
   int seeCata = 0;
 
   // double sens = 0.7; // sensitivity from 0.0 to 1.0
   // double controlLR;
-  while (1) {
-    left = control.Axis3.position(), right = left;
-    // controlLR = control.Axis1.position();
-    // if (controlLR<90 || controlLR>-90) controlLR *= sens;
 
+  driverTime.clear(); // damn
+
+  while (1) {
+    if (driverTime.time(msec) < 500 && control.ButtonX.pressing()) {
+      skillsMacro();
+    }
+
+    if (autonmode::mode == autonmode::SKILLS) {
+      if (driverTime.time(sec) > 55) {
+        PneuHang.set(true);
+      }
+    } else {
+      if (driverTime.time(sec) > 95 && control.ButtonL2.pressing()) {
+        PneuHang.set(true);
+      }
+    }
+    if (2 <= (0 + control.ButtonUp.pressing() + control.ButtonDown.pressing() + control.ButtonLeft.pressing() + control.ButtonRight.pressing())) {
+      PneuHang.set(true);
+    }
+
+    left = control.Axis3.position(), right = left;
     left += control.Axis1.position();
     right -= control.Axis1.position();
     drivePct(left + lDriveModifier, right + rDriveModifier);
 
-    if (!distances.isObjectDetected() || distances.objectDistance(mm) > 50) {
+    if (distances.objectDistance(mm) > 23) {
       seeCata = 0;
-    } else if (seeCata < 10) {
+    } else if (seeCata < 5) {
       seeCata++;
     }
 
     if (cata || seeCata < 1) {
-      spinCat(99 + cataModifier);
-      spinCat(100 + cataModifier);
+      if (MotorCat.velocity(vex::percent) < 10) {
+        spinCat(cataModifier + 100);
+        spinCat(cataModifier + 99);
+      }
     } else {
       spinCat(0);
     }
@@ -147,15 +173,23 @@ void usercontrol(void) {
     if (control.ButtonR1.pressing()) {
       spinIntk(99);
       spinIntk(100);
-    } else if (control.ButtonR2.pressing()) {
+    } else if (control.ButtonR2.pressing()/* || openFrontWings || control.ButtonL2.pressing()*/) {
       spinIntk(-99);
       spinIntk(-100);
     } else {
       spinIntk(0);
     }
 
-    tc.runAllPressed();
-    tc.updatePressing();
+    if (control.ButtonL2.pressing() || openFrontWings) {
+      PneuLF.set(true);
+      PneuRF.set(true);
+    } else {
+      PneuLF.set(false);
+      PneuRF.set(false);
+    }
+
+    TCONTROLLER.runAllPressed();
+    TCONTROLLER.updatePressing();
 
     wait(20, msec);
   }
@@ -165,6 +199,7 @@ void usercontrol(void) {
 // Main will set up the competition functions and callbacks.
 //
 int main() {
+  driverTime = timer();
   // Run the pre-autonomous function.
   pre_auton();
 
@@ -174,6 +209,12 @@ int main() {
 
   // Prevent main from exiting with an infinite loop.
   while (true) {
+    if (!Competition.isEnabled()) {
+      PneuLF.set(false);
+      PneuRF.set(false);
+      PneuHang.set(false);
+    }
+    // PneuHang.set(false);
     wait(100, msec);
   }
 }

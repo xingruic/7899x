@@ -16,16 +16,18 @@ void arcWait(const double &angle, const int &lspct, const int &rspct, bool reset
 void arcWait(const double &angle, const int &lspct, const int &rspct, bool reset);
 void arcWait(const double &angle, const int &lspct, const int &rspct);
 
+extern bool openFrontWings;
+
 namespace pid {
     // actual360 is how many degrees the gyro sensor thinks it turned when it is turned 360 degrees clockwise.
-    const double actual360 = 358.2;
+    const double actual360 = 359.8;
 
     struct PIDconsts {
         const double kp, ki, kd, threshold;
         const int speedPct;
         PIDconsts(double kp = 0, double ki = 0, double kd = 0, double threshold = 10, int speedPct = 100) :kp(kp), ki(ki), kd(kd), threshold(threshold), speedPct(speedPct) {}
     };
-    extern const PIDconsts PID45, PID90, PID135, PID180, PID_DRIVE, PID_ARC, PID_SLOWARC, PID_DRIVEANGLE, PID_FLY;
+    extern const PIDconsts PID20, PID60, PID90, PID135, PID180, PID_DRIVE, PID_ARC, PID_SLOWARC, PID_DRIVEANGLE, PID_FLY;
     const double WHEEL_TO_CENTER = NULL; // the distance (degrees) from a wheel to the center
     void drive(double dist, int timeout, const struct PIDconsts &pc);
     void drive(double dist, int timeout);
